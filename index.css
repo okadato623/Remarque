@@ -1,0 +1,26 @@
+span {
+  font-size: 20px;
+}
+
+.CodeMirror {
+  background-color: #ddd;
+}
+.CreateNewTabBtn {
+  width: 30px;
+  height: 30px;
+}
+.EditableTab {
+  height: 28px;
+  width: 100px;
+  display: inline-block;
+  border: solid 1px;
+  text-align: center;
+}
+.ActiveTab {
+  height: 28px;
+  width: 100px;
+  display: inline-block;
+  border: solid 1px;
+  text-align: center;
+  background-color: #bbb;
+}

@@ -1,0 +1,90 @@
+<head>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
+  />
+  <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+  <div id="button-list">
+    <button class="CreateNewTabBtn" onclick="createNewTab();">+</button>
+  </div>
+  <div style="height: 95%;">
+    <textarea id="editor"></textarea>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+  <script>
+    const contents = []
+    const simplemde = new SimpleMDE({
+      element: document.getElementById("editor"),
+      toolbar: [],
+      spellChecker: false,
+      status: false,
+    })
+
+    $(document).on("keydown", function (e) {
+      if (e.metaKey && e.which === 83) {
+        saveActiveTab()
+        e.preventDefault()
+        return false
+      }
+    })
+
+    function createNewTab() {
+      saveActiveTab()
+      const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
+        .CodeMirror
+      codemirror.getDoc().setValue("")
+      const addMoreButton = document.createElement("div")
+      const tabs = document.getElementById("button-list").childNodes
+      tabs.forEach(function (tab) {
+        if (tab.classList !== undefined) {
+          tab.classList.remove("ActiveTab")
+        }
+      })
+      addMoreButton.contentEditable = true
+      addMoreButton.id = idGenerator()
+      addMoreButton.innerHTML = "新規タブ"
+      addMoreButton.className = "EditableTab ActiveTab"
+      addMoreButton.onclick = function () {
+        focusClickedTab(this)
+      }
+      $("#button-list").append(addMoreButton)
+    }
+
+    function focusClickedTab(tab) {
+      saveActiveTab()
+      const tabs = document.getElementById("button-list").childNodes
+      tabs.forEach(function (tab) {
+        if (tab.classList !== undefined) {
+          tab.classList.remove("ActiveTab")
+        }
+      })
+      tab.className += " ActiveTab"
+      const savedTab = contents.find((content) => content.id === tab.id)
+      const content = savedTab === undefined ? "" : savedTab.content
+      const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
+        .CodeMirror
+      codemirror.getDoc().setValue(content)
+    }
+
+    function saveActiveTab() {
+      const active = document.getElementsByClassName("ActiveTab")[0]
+      if (active === undefined) return
+      const json = {
+        id: active.id,
+        title: active.innerHTML,
+        content: simplemde.value(),
+      }
+      const idx = contents.findIndex((content) => content.id === json.id)
+      idx === -1 ? contents.push(json) : (contents[idx] = json)
+    }
+
+    function idGenerator() {
+      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+    }
+  </script>
+</body>
