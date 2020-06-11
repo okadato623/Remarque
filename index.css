@@ -15,7 +15,7 @@ span {
   line-height: 180%;
 }
 .OperationBtn {
-  width: 50px;
+  width: auto;
   height: 30px;
 }
 .EditableTab {

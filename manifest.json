@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "パピルス",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "マルチタブ対応の Papier です",
   "icons": {
     "16": "papirus.png",

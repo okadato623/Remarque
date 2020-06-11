@@ -32,12 +32,6 @@ $(document).on("keydown", function (e) {
   }
 })
 
-$("div[contenteditable]").keydown(function (e) {
-  if (e.keyCode === 13) {
-    return false
-  }
-})
-
 $("#createNewTabBtn").on("click", createNewTab)
 $("#deleteActiveTabBtn").on("click", deleteActiveTab)
 
@@ -55,6 +49,12 @@ function createNewTab() {
 function createNewTabElem(content = null, active = false) {
   const newTabElem = document.createElement("div")
   newTabElem.contentEditable = true
+  newTabElem.addEventListener("keydown", function (e) {
+    if (e.keyCode === 13) {
+      e.preventDefault()
+      return false
+    }
+  })
   if (content === null) {
     newTabElem.id = idGenerator()
     newTabElem.innerHTML = "New Tab"
