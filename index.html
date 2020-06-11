@@ -6,24 +6,35 @@
   <link rel="stylesheet" href="index.css" />
 </head>
 
-<body>
-  <div id="button-list">
-    <button class="CreateNewTabBtn" onclick="createNewTab();">+</button>
-  </div>
-  <div style="height: 95%;">
+<body style="background-color: #f0f0f0;">
+  <div style="margin: auto; height: 95%; max-width: calc(80ch + 40px);">
+    <div id="button-list" style="background-color: #f0f0f0; padding-top: 30px;">
+      <button class="CreateNewTabBtn" onclick="createNewTab();">Create</button>
+      <button class="CreateNewTabBtn" onclick="deleteActiveTab();">Delete</button>
+    </div>
     <textarea id="editor"></textarea>
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
   <script>
-    const contents = []
+    const contents =
+      localStorage.getItem("storedContents") === null
+        ? []
+        : JSON.parse(localStorage.getItem("storedContents"))
+        
     const simplemde = new SimpleMDE({
       element: document.getElementById("editor"),
       toolbar: [],
       spellChecker: false,
       status: false,
     })
+    
+    if (contents.length !== 0) {
+      contents.forEach(function (content) {
+        loadTabFromStore(content)
+      })
+    }
 
     $(document).on("keydown", function (e) {
       if (e.metaKey && e.which === 83) {
@@ -32,6 +43,10 @@
         return false
       }
     })
+
+    if (countTabs() === 0) {
+      createNewTab()
+    }
 
     function createNewTab() {
       saveActiveTab()
@@ -52,6 +67,28 @@
       addMoreButton.onclick = function () {
         focusClickedTab(this)
       }
+      $("#button-list").append(addMoreButton)
+    }
+
+    function loadTabFromStore(content) {
+      const addMoreButton = document.createElement("div")
+      const tabs = document.getElementById("button-list").childNodes
+      tabs.forEach(function (tab) {
+        if (tab.classList !== undefined) {
+          tab.classList.remove("ActiveTab")
+        }
+      })
+      addMoreButton.contentEditable = true
+      addMoreButton.id = content.id
+      addMoreButton.innerHTML = content.title
+      addMoreButton.className = "EditableTab ActiveTab"
+      addMoreButton.onclick = function () {
+        focusClickedTab(this)
+      }
+      const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
+        .CodeMirror
+      codemirror.getDoc().setValue(content.content)
+      
       $("#button-list").append(addMoreButton)
     }
 
@@ -81,6 +118,22 @@
       }
       const idx = contents.findIndex((content) => content.id === json.id)
       idx === -1 ? contents.push(json) : (contents[idx] = json)
+
+      localStorage.setItem("storedContents", JSON.stringify(contents))
+    }
+    
+    function deleteActiveTab() {
+      const active = document.getElementsByClassName("ActiveTab")[0]
+      active.remove()
+      const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
+        .CodeMirror
+      codemirror.getDoc().setValue("")
+      const newContents = contents.filter(content => content.id !== active.id)
+      localStorage.setItem("storedContents", JSON.stringify(newContents))
+    }
+
+    function countTabs() {
+      return document.getElementsByClassName("EditableTab").length
     }
 
     function idGenerator() {
