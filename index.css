@@ -1,16 +1,18 @@
 span {
-  font-size: 16px;
+  font-size: 20px;
+  color: #666;
 }
 .CodeMirror .CodeMirror-code .cm-header-1 {
-  font-size: 160%;
+  font-size: 180%;
 }
 .CodeMirror .CodeMirror-code .cm-header-2 {
-  font-size: 130%;
+  font-size: 140%;
 }
 
 .CodeMirror {
-  background-color: #f0f0f0f0;
+  background-color: #f0f0f0;
   border: none;
+  line-height: 180%;
 }
 .OperationBtn {
   width: 50px;
@@ -19,15 +21,13 @@ span {
 .EditableTab {
   height: 28px;
   width: 100px;
-  display: inline-block;
+  display: inline-flex;
   border: solid 1px;
   text-align: center;
+  align-items: center;
+  justify-content: center;
+  vertical-align: top;
 }
 .ActiveTab {
-  height: 28px;
-  width: 100px;
-  display: inline-block;
-  border: solid 1px;
-  text-align: center;
   background-color: #bbb;
 }

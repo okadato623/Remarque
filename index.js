@@ -5,18 +5,20 @@ const simplemde = new SimpleMDE({
   status: false,
 })
 
-let contents =
-  localStorage.getItem("storedContents") === null
-    ? []
-    : JSON.parse(localStorage.getItem("storedContents"))
+let contents
 
-if (contents.length !== 0) {
-  contents.forEach(function (content) {
-    if (content.id === localStorage.getItem("activeTabId"))
-      loadTabFromStore(content, true)
-    else loadTabFromStore(content)
-  })
-}
+chrome.storage.local.get({ storedContents: [], activeTabId: "" }, function (
+  items
+) {
+  contents = items.storedContents
+  if (contents.length !== 0) {
+    contents.forEach(function (content) {
+      loadTabFromStore(content, content.id === items.activeTabId)
+    })
+  } else {
+    createNewTab()
+  }
+})
 
 window.addEventListener("unload", function () {
   saveActiveTab()
@@ -39,9 +41,11 @@ $("div[contenteditable]").keydown(function (e) {
 $("#createNewTabBtn").on("click", createNewTab)
 $("#deleteActiveTabBtn").on("click", deleteActiveTab)
 
-if (countTabs() === 0) createNewTab()
-
 function createNewTab() {
+  if (countTabs() > 5) {
+    alert("You can use up to 6 tabs!")
+    return
+  }
   saveActiveTab()
   deactivateAllTabs()
   createNewTabElem(null, true)
@@ -53,7 +57,7 @@ function createNewTabElem(content = null, active = false) {
   newTabElem.contentEditable = true
   if (content === null) {
     newTabElem.id = idGenerator()
-    newTabElem.innerHTML = "新規タブ"
+    newTabElem.innerHTML = "New Tab"
   } else {
     newTabElem.id = content.id
     newTabElem.innerHTML = content.title
@@ -72,6 +76,11 @@ function loadTabFromStore(content, active = false) {
       .CodeMirror
     codemirror.getDoc().setValue(content.content)
   }
+}
+
+function activateLastTab() {
+  const tabs = document.getElementById("button-list").childNodes
+  tabs[tabs.length - 1].className += " ActiveTab"
 }
 
 function deactivateAllTabs() {
@@ -97,7 +106,7 @@ function focusClickedTab(tab) {
   const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
     .CodeMirror
   codemirror.getDoc().setValue(content)
-  localStorage.setItem("activeTabId", tab.id)
+  chrome.storage.local.set({ storedContents: contents, activeTabId: tab.id })
 }
 
 function saveActiveTab() {
@@ -111,16 +120,18 @@ function saveActiveTab() {
   const idx = contents.findIndex((content) => content.id === json.id)
   idx === -1 ? contents.push(json) : (contents[idx] = json)
 
-  localStorage.setItem("storedContents", JSON.stringify(contents))
+  chrome.storage.local.set({ storedContents: contents, activeTabId: active.id })
 }
 
 function deleteActiveTab() {
-  if (window.confirm("Sure?") === false) return
+  // if (window.confirm("Sure?") === false) return
   const active = document.getElementsByClassName("ActiveTab")[0]
+  if (active === undefined) return
   contents = contents.filter((content) => content.id !== active.id)
   active.remove()
   flushTextarea()
-  localStorage.setItem("storedContents", JSON.stringify(contents))
+  chrome.storage.local.set({ storedContents: contents, activeTabId: active.id })
+  activateLastTab()
 }
 
 function flushTextarea() {

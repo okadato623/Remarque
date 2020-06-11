@@ -1,4 +1,5 @@
 <head>
+  <meta charset="utf-8" />
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
@@ -6,14 +7,16 @@
   <link rel="stylesheet" href="index.css" />
 </head>
 
-<body style="background-color: #f0f0f0;">
-  <div style="margin: auto; height: 90%; max-width: 800px;">
+<body style="background-color: #f0f0f0; font-size: 100%;">
+  <div style="margin: auto; max-width: 800px; display: flex;">
     <div id="button-list" style="background-color: #f0f0f0; padding-top: 30px;">
       <button id="createNewTabBtn" class="OperationBtn">Create</button>
       <button id="deleteActiveTabBtn" class="OperationBtn">
         Delete
       </button>
     </div>
+  </div>
+  <div style="margin: auto; max-width: 800px;">
     <textarea id="editor"></textarea>
   </div>
 
