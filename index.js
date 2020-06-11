@@ -3,6 +3,8 @@ const simplemde = new SimpleMDE({
   toolbar: [],
   spellChecker: false,
   status: false,
+  indentWithTabs: false,
+  tabSize: 2,
 })
 
 let contents

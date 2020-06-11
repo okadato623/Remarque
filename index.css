@@ -1,18 +1,24 @@
 span {
-  font-size: 20px;
+  font-size: 18px;
   color: #666;
 }
+
 .CodeMirror .CodeMirror-code .cm-header-1 {
   font-size: 180%;
 }
 .CodeMirror .CodeMirror-code .cm-header-2 {
   font-size: 140%;
 }
-
+.CodeMirror .CodeMirror-code .cm-header-3 {
+  font-size: 120%;
+}
 .CodeMirror {
   background-color: #f0f0f0;
   border: none;
   line-height: 180%;
+}
+.CodeMirror-vscrollbar {
+  display: none !important;
 }
 .OperationBtn {
   width: auto;
@@ -35,7 +41,6 @@ span {
 #createNewTabBtn {
   background-color: #ccccff;
 }
-
 #deleteActiveTabBtn {
   background-color: #ffaaaa;
 }
