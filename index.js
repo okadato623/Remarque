@@ -124,7 +124,7 @@ function saveActiveTab() {
 }
 
 function deleteActiveTab() {
-  // if (window.confirm("Sure?") === false) return
+  if (window.confirm("Sure?") === false) return
   const active = document.getElementsByClassName("ActiveTab")[0]
   if (active === undefined) return
   contents = contents.filter((content) => content.id !== active.id)
