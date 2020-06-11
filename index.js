@@ -80,7 +80,17 @@ function loadTabFromStore(content, active = false) {
 
 function activateLastTab() {
   const tabs = document.getElementById("button-list").childNodes
-  tabs[tabs.length - 1].className += " ActiveTab"
+  const lastTab = tabs[tabs.length - 1]
+  lastTab.className += " ActiveTab"
+  const savedTab = contents.find((content) => content.id === lastTab.id)
+  const content = savedTab === undefined ? "" : savedTab.content
+  const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
+    .CodeMirror
+  codemirror.getDoc().setValue(content)
+  chrome.storage.local.set({
+    storedContents: contents,
+    activeTabId: lastTab.id,
+  })
 }
 
 function deactivateAllTabs() {
