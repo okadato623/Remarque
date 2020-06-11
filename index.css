@@ -31,3 +31,11 @@ span {
 .ActiveTab {
   background-color: #bbb;
 }
+
+#createNewTabBtn {
+  background-color: #ccccff;
+}
+
+#deleteActiveTabBtn {
+  background-color: #ffaaaa;
+}
