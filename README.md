@@ -1,2 +1,2 @@
-# Description
-Chrome 拡張機能 Papier のマルチタブ版
+## Description
+Papirus is a Chrome extension for writing multiple notes in a blank tab.
