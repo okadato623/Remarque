@@ -1,25 +1,40 @@
 span {
-  font-size: 18px;
+  font-size: 16px;
   color: #666;
 }
 
 .CodeMirror .CodeMirror-code .cm-header-1 {
   font-size: 180%;
+  line-height: 180%;
 }
 .CodeMirror .CodeMirror-code .cm-header-2 {
   font-size: 140%;
+  line-height: 140%;
 }
 .CodeMirror .CodeMirror-code .cm-header-3 {
   font-size: 120%;
+  line-height: 120%;
+}
+.CodeMirror .CodeMirror-code .cm-comment {
+  background: rgba(0, 200, 0, 0.1);
+  padding-bottom: 3px;;
+}
+.CodeMirror .CodeMirror-code .cm-link {
+  cursor: pointer;
 }
 .CodeMirror {
   background-color: #f0f0f0;
   border: none;
-  line-height: 180%;
+  line-height: 136%;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 .CodeMirror-vscrollbar {
   display: none !important;
 }
+.CodeMirror-cursor {
+  border-left: 1px solid #0d0;
+}
+
 .OperationBtn {
   width: auto;
   height: 30px;
