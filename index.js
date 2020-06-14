@@ -32,6 +32,26 @@ $(document).on("keydown", function (e) {
     e.preventDefault()
     return false
   }
+
+  const active = document.getElementsByClassName("ActiveTab")[0]
+  const idx = Array.prototype.indexOf.call(
+    active.parentNode.children,
+    active
+  )
+  
+  if (e.metaKey && e.which === 37) {
+    if (idx === 2) return
+    focusTab(active.parentNode.children[idx - 1])
+    e.preventDefault()
+    return false
+  }
+
+  if (e.metaKey && e.which === 39) {
+    if (active.parentNode.children.length - 1 === idx) return
+    focusTab(active.parentNode.children[idx + 1])
+    e.preventDefault()
+    return false
+  }
 })
 
 $("#createNewTabBtn").on("click", createNewTab)
@@ -66,7 +86,7 @@ function createNewTabElem(content = null, active = false) {
   }
   newTabElem.className = active ? "EditableTab ActiveTab" : "EditableTab"
   newTabElem.onclick = function () {
-    focusClickedTab(this)
+    focusTab(this)
   }
   $("#button-list").append(newTabElem)
 }
@@ -104,14 +124,9 @@ function deactivateAllTabs() {
   })
 }
 
-function focusClickedTab(tab) {
+function focusTab(tab) {
   saveActiveTab()
-  const tabs = document.getElementById("button-list").childNodes
-  tabs.forEach(function (tab) {
-    if (tab.classList !== undefined) {
-      tab.classList.remove("ActiveTab")
-    }
-  })
+  deactivateAllTabs()
   tab.className += " ActiveTab"
   const savedTab = contents.find((content) => content.id === tab.id)
   const content = savedTab === undefined ? "" : savedTab.content
@@ -157,5 +172,5 @@ function countTabs() {
 }
 
 function idGenerator() {
-  return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+  return (((1 + Math.random()) * 0x10000) | 0).toString(32).substring(1)
 }
