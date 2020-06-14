@@ -34,11 +34,8 @@ $(document).on("keydown", function (e) {
   }
 
   const active = document.getElementsByClassName("ActiveTab")[0]
-  const idx = Array.prototype.indexOf.call(
-    active.parentNode.children,
-    active
-  )
-  
+  const idx = Array.prototype.indexOf.call(active.parentNode.children, active)
+
   if (e.metaKey && e.which === 37) {
     if (idx === 2) return
     focusTab(active.parentNode.children[idx - 1])
@@ -94,9 +91,7 @@ function createNewTabElem(content = null, active = false) {
 function loadTabFromStore(content, active = false) {
   createNewTabElem(content, active)
   if (active) {
-    const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
-      .CodeMirror
-    codemirror.getDoc().setValue(content.content)
+    loadTextarea(content.content)
   }
 }
 
@@ -106,9 +101,7 @@ function activateLastTab() {
   lastTab.className += " ActiveTab"
   const savedTab = contents.find((content) => content.id === lastTab.id)
   const content = savedTab === undefined ? "" : savedTab.content
-  const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
-    .CodeMirror
-  codemirror.getDoc().setValue(content)
+  loadTextarea(content)
   chrome.storage.local.set({
     storedContents: contents,
     activeTabId: lastTab.id,
@@ -130,9 +123,7 @@ function focusTab(tab) {
   tab.className += " ActiveTab"
   const savedTab = contents.find((content) => content.id === tab.id)
   const content = savedTab === undefined ? "" : savedTab.content
-  const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
-    .CodeMirror
-  codemirror.getDoc().setValue(content)
+  loadTextarea(content)
   chrome.storage.local.set({ storedContents: contents, activeTabId: tab.id })
 }
 
@@ -159,6 +150,16 @@ function deleteActiveTab() {
   flushTextarea()
   chrome.storage.local.set({ storedContents: contents, activeTabId: active.id })
   activateLastTab()
+}
+
+function loadTextarea(content) {
+  const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
+    .CodeMirror
+  codemirror.getDoc().setValue(content)
+
+  $(".cm-link").on("click", function (e) {
+    window.open(e.target.innerHTML)
+  })
 }
 
 function flushTextarea() {
