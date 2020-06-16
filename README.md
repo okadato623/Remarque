@@ -1,2 +1,2 @@
 ## Description
-Papirus is a Chrome extension for writing multiple notes in a blank tab.
+Remarque is a Chrome extension for writing multiple notes in a blank tab.
