@@ -51,6 +51,23 @@ $(document).on("keydown", function (e) {
   }
 })
 
+const waitAndExecute = (stack, callback) => {
+  stack.forEach(e => {
+    clearTimeout(e)
+    stack.shift()
+  })
+
+  const eventId = setTimeout(callback, 1000)
+  stack.push(eventId)
+}
+
+const stack = []
+$(document).keydown(_ => {
+  waitAndExecute(stack, () => {
+    $(".cm-link").on("click", e => window.open(e.target.innerHTML))
+  })
+})
+
 $("#createNewTabBtn").on("click", createNewTab)
 $("#deleteActiveTabBtn").on("click", deleteActiveTab)
 
