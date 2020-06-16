@@ -44,19 +44,20 @@ $(document).on("keydown", function (e) {
     return false
   }
 
+  const tabs = document.getElementById('tab-list').children
   const active = document.getElementsByClassName("ActiveTab")[0]
-  const idx = Array.prototype.indexOf.call(active.parentNode.children, active)
+  const idx = Array.prototype.indexOf.call(tabs, active)
 
   if (e.metaKey && e.which === 37) {
-    if (idx === 2) return
-    focusTab(active.parentNode.children[idx - 1])
+    if (idx === 0) return
+    focusTab(tabs[idx - 1])
     e.preventDefault()
     return false
   }
 
   if (e.metaKey && e.which === 39) {
-    if (active.parentNode.children.length - 1 === idx) return
-    focusTab(active.parentNode.children[idx + 1])
+    if (tabs.length - 1 === idx) return
+    focusTab(tabs[idx + 1])
     e.preventDefault()
     return false
   }
@@ -101,7 +102,7 @@ function createNewTabElem(content = null, active = false) {
   newTabElem.onclick = function () {
     focusTab(this)
   }
-  $("#button-list").append(newTabElem)
+  $("#tab-list").append(newTabElem)
 }
 
 function loadTabFromStore(content, active = false) {
@@ -112,7 +113,7 @@ function loadTabFromStore(content, active = false) {
 }
 
 function activateLastTab() {
-  const tabs = document.getElementById("button-list").childNodes
+  const tabs = document.getElementById("tab-list").childNodes
   const lastTab = tabs[tabs.length - 1]
   lastTab.className += " ActiveTab"
   const savedTab = contents.find((content) => content.id === lastTab.id)
@@ -125,7 +126,7 @@ function activateLastTab() {
 }
 
 function deactivateAllTabs() {
-  const tabs = document.getElementById("button-list").childNodes
+  const tabs = document.getElementById("tab-list").childNodes
   tabs.forEach(function (tab) {
     if (tab.classList !== undefined) {
       tab.classList.remove("ActiveTab")
