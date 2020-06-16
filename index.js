@@ -64,6 +64,7 @@ const waitAndExecute = (stack, callback) => {
 const stack = []
 $(document).keydown(_ => {
   waitAndExecute(stack, () => {
+    saveActiveTab()
     $(".cm-link").on("click", e => window.open(e.target.innerHTML))
   })
 })
