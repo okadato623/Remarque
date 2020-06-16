@@ -26,6 +26,17 @@ window.addEventListener("unload", function () {
   saveActiveTab()
 })
 
+const waitAndExecute = (stack, callback) => {
+  stack.forEach(e => {
+    clearTimeout(e)
+    stack.shift()
+  })
+
+  const eventId = setTimeout(callback, 1000)
+  stack.push(eventId)
+}
+
+const stack = []
 $(document).on("keydown", function (e) {
   if (e.metaKey && e.which === 83) {
     saveActiveTab()
@@ -49,20 +60,7 @@ $(document).on("keydown", function (e) {
     e.preventDefault()
     return false
   }
-})
 
-const waitAndExecute = (stack, callback) => {
-  stack.forEach(e => {
-    clearTimeout(e)
-    stack.shift()
-  })
-
-  const eventId = setTimeout(callback, 1000)
-  stack.push(eventId)
-}
-
-const stack = []
-$(document).keydown(_ => {
   waitAndExecute(stack, () => {
     saveActiveTab()
     $(".cm-link").on("click", e => window.open(e.target.innerHTML))
