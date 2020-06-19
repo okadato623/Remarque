@@ -79,7 +79,6 @@ function createNewTab() {
   saveActiveTab()
   deactivateAllTabs()
   createNewTabElem(null, true)
-  flushTextarea()
 }
 
 function createNewTabElem(content = null, active = false) {
@@ -164,7 +163,6 @@ function deleteActiveTab() {
   if (active === undefined) return
   contents = contents.filter((content) => content.id !== active.id)
   active.remove()
-  flushTextarea()
   chrome.storage.local.set({ storedContents: contents, activeTabId: active.id })
   activateLastTab()
 }
@@ -177,12 +175,6 @@ function loadTextarea(content) {
   $(".cm-link").on("click", function (e) {
     window.open(e.target.innerHTML)
   })
-}
-
-function flushTextarea() {
-  const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
-    .CodeMirror
-  codemirror.getDoc().setValue("")
 }
 
 function countTabs() {
