@@ -1,19 +1,4 @@
-const renewSimplemde = () => {
-  const editorContainer = $("#editor-container")
-  editorContainer.empty()
-  editorContainer.append('<textarea id="editor"></textarea>')
-  return new SimpleMDE({
-    element: document.getElementById("editor"),
-    toolbar: [],
-    spellChecker: false,
-    status: false,
-    indentWithTabs: false,
-    tabSize: 2,
-  })
-}
-
 let contents
-let simplemde = renewSimplemde()
 
 chrome.storage.local.get({ storedContents: [], activeTabId: "" }, function (
   items
@@ -85,6 +70,7 @@ function createNewTab() {
   }
   saveActiveTab()
   deactivateAllTabs()
+  editor.renew()
   createNewTabElem(null, true)
 }
 
@@ -156,7 +142,7 @@ function saveActiveTab() {
   const json = {
     id: active.id,
     title: active.innerHTML,
-    content: simplemde.value(),
+    content: editor.value(),
   }
   const idx = contents.findIndex((content) => content.id === json.id)
   idx === -1 ? contents.push(json) : (contents[idx] = json)
@@ -175,10 +161,7 @@ function deleteActiveTab() {
 }
 
 function loadTextarea(content) {
-  simplemde = renewSimplemde()
-  const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
-    .CodeMirror
-  codemirror.getDoc().setValue(content)
+  editor.renew(content)
 
   $(".cm-link").on("click", function (e) {
     window.open(e.target.innerHTML)
