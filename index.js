@@ -1,12 +1,3 @@
-const simplemde = new SimpleMDE({
-  element: document.getElementById("editor"),
-  toolbar: [],
-  spellChecker: false,
-  status: false,
-  indentWithTabs: false,
-  tabSize: 2,
-})
-
 let contents
 
 chrome.storage.local.get({ storedContents: [], activeTabId: "" }, function (
@@ -78,8 +69,8 @@ function createNewTab() {
   }
   saveActiveTab()
   deactivateAllTabs()
+  editor.renew()
   createNewTabElem(null, true)
-  flushTextarea()
 }
 
 function createNewTabElem(content = null, active = false) {
@@ -150,7 +141,7 @@ function saveActiveTab() {
   const json = {
     id: active.id,
     title: active.innerHTML,
-    content: simplemde.value(),
+    content: editor.value(),
   }
   const idx = contents.findIndex((content) => content.id === json.id)
   idx === -1 ? contents.push(json) : (contents[idx] = json)
@@ -164,25 +155,16 @@ function deleteActiveTab() {
   if (active === undefined) return
   contents = contents.filter((content) => content.id !== active.id)
   active.remove()
-  flushTextarea()
   chrome.storage.local.set({ storedContents: contents, activeTabId: active.id })
   activateLastTab()
 }
 
 function loadTextarea(content) {
-  const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
-    .CodeMirror
-  codemirror.getDoc().setValue(content)
+  editor.renew(content)
 
   $(".cm-link").on("click", function (e) {
     window.open(e.target.innerHTML)
   })
-}
-
-function flushTextarea() {
-  const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
-    .CodeMirror
-  codemirror.getDoc().setValue("")
 }
 
 function countTabs() {
