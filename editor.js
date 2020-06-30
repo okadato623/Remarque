@@ -1,6 +1,6 @@
 const editor = {
   simplemde: {},
-  renew: (content = '') => {
+  renew: (content = "") => {
     const editorContainer = $("#editor-container")
     editorContainer.empty()
     editorContainer.append('<textarea id="editor"></textarea>')
@@ -13,11 +13,11 @@ const editor = {
       tabSize: 4,
     })
     const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
-    .CodeMirror
-      codemirror.getDoc().setValue(content)
+      .CodeMirror
+    codemirror.getDoc().setValue(content)
+    codemirror.clearHistory()
   },
   value: () => {
     return simplemde.value()
-  }
+  },
 }
-
