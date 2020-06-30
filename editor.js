@@ -10,7 +10,7 @@ const editor = {
       spellChecker: false,
       status: false,
       indentWithTabs: false,
-      tabSize: 2,
+      tabSize: 4,
     })
     const codemirror = $('textarea[id="editor"]').nextAll(".CodeMirror")[0]
     .CodeMirror
