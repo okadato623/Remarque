@@ -39,14 +39,14 @@ $(document).on("keydown", function (e) {
   const active = document.getElementsByClassName("ActiveTab")[0]
   const idx = Array.prototype.indexOf.call(tabs, active)
 
-  if (e.metaKey && e.which === 37) {
+  if (e.ctrlKey && e.which === 37) {
     if (idx === 0) return
     focusTab(tabs[idx - 1])
     e.preventDefault()
     return false
   }
 
-  if (e.metaKey && e.which === 39) {
+  if (e.ctrlKey && e.which === 39) {
     if (tabs.length - 1 === idx) return
     focusTab(tabs[idx + 1])
     e.preventDefault()
