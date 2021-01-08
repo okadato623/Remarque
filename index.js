@@ -25,7 +25,7 @@ const waitAndExecute = (stack, callback) => {
     stack.shift()
   })
 
-  const eventId = setTimeout(callback, 1000)
+  const eventId = setTimeout(callback, 100)
   stack.push(eventId)
 }
 
