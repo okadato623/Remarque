@@ -137,7 +137,7 @@ function createTabFromStore(content) {
 }
 
 function loadTabFromStore(content, active = false) {
-  createTabFromStore(content, active)
+  createTabFromStore(content)
   if (active) {
     loadTextarea(content.content)
   }
