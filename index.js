@@ -37,24 +37,6 @@ $(document).on("keydown", function (e) {
     return false
   }
 
-  const tabs = document.getElementById("tab-list").children
-  const active = document.getElementsByClassName("ActiveTab")[0]
-  const idx = Array.prototype.indexOf.call(tabs, active)
-
-  if (e.ctrlKey && e.which === 37) {
-    if (idx === 0) return
-    focusTab(tabs[idx - 1])
-    e.preventDefault()
-    return false
-  }
-
-  if (e.ctrlKey && e.which === 39) {
-    if (tabs.length - 1 === idx) return
-    focusTab(tabs[idx + 1])
-    e.preventDefault()
-    return false
-  }
-
   waitAndExecute(stack, () => {
     saveActiveTab()
     $(".cm-link").on("click", (e) => window.open(e.target.innerHTML))
