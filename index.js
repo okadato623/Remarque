@@ -42,8 +42,19 @@ $(document).on("keydown", function (e) {
   })
 })
 
-$("#createNewTabBtn").on("click", createNewTab)
-$("#deleteActiveTabBtn").on("click", deleteActiveTab)
+$("#createNewTabBtn").on("click",() => {
+  if (countTabs() > 5) {
+    alert("You can use up to 6 tabs!")
+    return
+  }
+  const activeTab = document.getElementsByClassName("ActiveTab")[0]
+  saveTabContent(activeTab)
+  deactivateActiveTab()
+  editor.renew()
+
+  createNewTab()
+})
+$("#deleteActiveTabBtn").on("click", deleteActiveTabAndActivateLastTab)
 chrome.storage.onChanged.addListener(syncLatestWindow)
 
 function syncLatestWindow() {
@@ -68,17 +79,22 @@ function syncLatestWindow() {
 }
 
 function createNewTab() {
-  if (countTabs() > 5) {
-    alert("You can use up to 6 tabs!")
-    return
+  const newContent = {
+    id: idGenerator(),
+    title: "New Tab",
+    content: "",
   }
-  saveActiveTab()
-  deactivateAllTabs()
-  editor.renew()
-  createNewTabElem(null, true)
+  createNewTabElem(newContent, true)
+  contents.push(newContent)
+
+  chrome.storage.local.set({
+    storedContents: contents,
+    activeTabId: newContent.id,
+    changeWindowId: window.id,
+  })
 }
 
-function createNewTabElem(content = null, active = false) {
+function createNewTabElem(content, active) {
   const newTabElem = document.createElement("div")
   newTabElem.contentEditable = true
   newTabElem.addEventListener("keydown", function (e) {
@@ -87,57 +103,36 @@ function createNewTabElem(content = null, active = false) {
       return false
     }
   })
-  if (content === null) {
-    newTabElem.id = idGenerator()
-    newTabElem.innerHTML = "New Tab"
-  } else {
-    newTabElem.id = content.id
-    newTabElem.innerHTML = content.title
-  }
+  newTabElem.id = content.id
+  newTabElem.innerHTML = content.title
   newTabElem.className = active ? "EditableTab ActiveTab" : "EditableTab"
   newTabElem.onclick = function () {
-    focusTab(this)
+    const activeTab = document.getElementsByClassName("ActiveTab")[0]
+    saveTabContent(activeTab)
+    changeActiveTab(this)
   }
   $("#tab-list").append(newTabElem)
 }
 
-function loadTabFromStore(content, active = false) {
+function loadTabFromStore(content, active) {
   createNewTabElem(content, active)
   if (active) {
     loadTextarea(content.content)
   }
 }
 
-function activateLastTab() {
-  const tabs = document.getElementById("tab-list").childNodes
-  const lastTab = tabs[tabs.length - 1]
-  lastTab.className += " ActiveTab"
-  const savedTab = contents.find((content) => content.id === lastTab.id)
-  const content = savedTab === undefined ? "" : savedTab.content
-  loadTextarea(content)
-  chrome.storage.local.set({
-    storedContents: contents,
-    activeTabId: lastTab.id,
-    changeWindowId: window.id,
-  })
+function deactivateActiveTab() {
+  const active = document.getElementsByClassName("ActiveTab")[0]
+  active.classList.remove("ActiveTab")
 }
 
-function deactivateAllTabs() {
-  const tabs = document.getElementById("tab-list").childNodes
-  tabs.forEach(function (tab) {
-    if (tab.classList !== undefined) {
-      tab.classList.remove("ActiveTab")
-    }
-  })
-}
+function changeActiveTab(tab) {
+  deactivateActiveTab()
 
-function focusTab(tab) {
-  saveActiveTab()
-  deactivateAllTabs()
   tab.className += " ActiveTab"
-  const savedTab = contents.find((content) => content.id === tab.id)
-  const content = savedTab === undefined ? "" : savedTab.content
-  loadTextarea(content)
+  const activeTabContent = contents.find((content) => content.id === tab.id)
+  loadTextarea(activeTabContent.content)
+
   chrome.storage.local.set({
     storedContents: contents,
     activeTabId: tab.id,
@@ -145,36 +140,48 @@ function focusTab(tab) {
   })
 }
 
+function saveTabContent(tab) {
+  const idx = contents.findIndex((content) => content.id === tab.id)
+  contents[idx].title = tab.innerHTML
+  contents[idx].content = editor.value()
+}
+
 function saveActiveTab() {
-  const active = document.getElementsByClassName("ActiveTab")[0]
-  if (active === undefined) return
-  const json = {
-    id: active.id,
-    title: active.innerHTML,
-    content: editor.value(),
-  }
-  const idx = contents.findIndex((content) => content.id === json.id)
-  idx === -1 ? contents.push(json) : (contents[idx] = json)
+  const activeTab = document.getElementsByClassName("ActiveTab")[0]
+  saveTabContent(activeTab)
 
   chrome.storage.local.set({
     storedContents: contents,
-    activeTabId: active.id,
+    activeTabId: activeTab.id,
     changeWindowId: window.id,
   })
 }
 
-function deleteActiveTab() {
+function deleteActiveTabAndActivateLastTab() {
   if (window.confirm("Sure?") === false) return
-  const active = document.getElementsByClassName("ActiveTab")[0]
-  if (active === undefined) return
-  contents = contents.filter((content) => content.id !== active.id)
-  active.remove()
+  
+  // view
+  const activeTabElem = document.getElementsByClassName("ActiveTab")[0]
+  activeTabElem.remove()
+
+  // contetnts
+  contents = contents.filter((content) => content.id !== activeTabElem.id)
+  
+  // view
+  const tabs = document.getElementById("tab-list").childNodes
+  const lastTab = tabs[tabs.length - 1]
+  lastTab.className += " ActiveTab"
+
+  // editor view
+  const lastTabContent = contents.find((content) => content.id === lastTab.id)
+  loadTextarea(lastTabContent.content)
+
+  // storage
   chrome.storage.local.set({
     storedContents: contents,
-    activeTabId: active.id,
+    activeTabId: lastTab.id,
     changeWindowId: window.id,
   })
-  activateLastTab()
 }
 
 function loadTextarea(content) {
