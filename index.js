@@ -99,10 +99,10 @@ function createNewTab() {
   saveActiveTab()
   deactivateAllTabs()
   editor.renew()
-  createNewTabElem(null, true)
+  createBlankTab()
 }
 
-function createNewTabElem(content = null, active = false) {
+function createNewTabElem() {
   const newTabElem = document.createElement("div")
   newTabElem.contentEditable = true
   newTabElem.addEventListener("keydown", function (e) {
@@ -111,22 +111,33 @@ function createNewTabElem(content = null, active = false) {
       return false
     }
   })
-  if (content === null) {
-    newTabElem.id = idGenerator()
-    newTabElem.innerHTML = "New Tab"
-  } else {
-    newTabElem.id = content.id
-    newTabElem.innerHTML = content.title
-  }
-  newTabElem.className = active ? "EditableTab ActiveTab" : "EditableTab"
   newTabElem.onclick = function () {
     focusTab(this)
   }
-  $("#tab-list").append(newTabElem)
+  
+  return newTabElem
+}
+
+function createBlankTab() {
+  const elem = createNewTabElem()
+  elem.id = idGenerator()
+  elem.innerHTML = "New Tab"
+  elem.className = "EditableTab ActiveTab"
+  
+  $("#tab-list").append(elem)
+}
+
+function createTabFromStore(content, active) {
+  const elem = createNewTabElem()
+  elem.id = content.id
+  elem.innerHTML = content.title
+  elem.className = active ? "EditableTab ActiveTab" : "EditableTab"
+  
+  $("#tab-list").append(elem)
 }
 
 function loadTabFromStore(content, active = false) {
-  createNewTabElem(content, active)
+  createTabFromStore(content, active)
   if (active) {
     loadTextarea(content.content)
   }
