@@ -140,14 +140,8 @@ function focusTab(tab) {
   saveActiveTab()
   deactivateAllTabs()
   tab.className += " ActiveTab"
-  const savedTab = contents.find((content) => content.id === tab.id)
-  const content = savedTab === undefined ? "" : savedTab.content
-  loadTextarea(content)
-  chrome.storage.local.set({
-    storedContents: contents,
-    activeTabId: tab.id,
-    changeWindowId: window.id,
-  })
+  const focused = contents.find((content) => content.id === tab.id)
+  loadTextarea(focused.content)
 }
 
 function saveActiveTab() {
