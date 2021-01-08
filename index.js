@@ -141,7 +141,10 @@ function focusTab(tab) {
   deactivateAllTabs()
   tab.className += " ActiveTab"
   const focused = contents.find((content) => content.id === tab.id)
-  loadTextarea(focused.content)
+  editor.renew(focused.content)
+  
+  // http スキームのリンクを clickable にする
+  $(".cm-link").on("click", (e) => window.open(e.target.innerHTML))
 }
 
 function saveActiveTab() {
@@ -170,14 +173,6 @@ function deleteActiveTab() {
   active.remove()
   const tabs = document.getElementById("tab-list").childNodes
   focusTab(tabs[tabs.length - 1])
-}
-
-function loadTextarea(content) {
-  editor.renew(content)
-
-  $(".cm-link").on("click", function (e) {
-    window.open(e.target.innerHTML)
-  })
 }
 
 function countTabs() {
