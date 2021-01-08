@@ -168,6 +168,8 @@ function deleteActiveTab() {
   if (active === undefined) return
   contents = contents.filter((content) => content.id !== active.id)
   active.remove()
+  
+  // Delete ボタン押下されたときは右端のタブをアクティベートする
   const tabs = document.getElementById("tab-list").childNodes
   focusTab(tabs[tabs.length - 1])
 }
