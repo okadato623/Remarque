@@ -30,7 +30,7 @@ const waitAndExecute = (stack, callback) => {
 }
 
 const stack = []
-$(document).on("keydown", function (e) {
+document.addEventListener("keydown", function (e) {
   if (e.metaKey && e.which === 83) {
     e.preventDefault()
     return false
@@ -38,11 +38,18 @@ $(document).on("keydown", function (e) {
 
   waitAndExecute(stack, () => {
     saveActiveTab()
-    $(".cm-link").on("click", (e) => window.open(e.target.innerHTML))
+    const links = document.getElementsByClassName("cm-link")
+
+    if (links.length === 0) return
+
+    for (link of links) {
+      link.removeEventListener("click", openLink, true)
+      link.addEventListener("click", openLink, true)
+    }
   })
 })
 
-$("#createNewTabBtn").on("click",() => {
+document.getElementById("createNewTabBtn").addEventListener("click",() => {
   if (countTabs() > 5) {
     alert("You can use up to 6 tabs!")
     return
@@ -54,7 +61,8 @@ $("#createNewTabBtn").on("click",() => {
 
   createNewTab()
 })
-$("#deleteActiveTabBtn").on("click", deleteActiveTabAndActivateLastTab)
+
+document.getElementById("deleteActiveTabBtn").addEventListener("click", deleteActiveTabAndActivateLastTab)
 chrome.storage.onChanged.addListener(syncLatestWindow)
 
 function syncLatestWindow() {
@@ -111,7 +119,7 @@ function createNewTabElem(content, active) {
     saveTabContent(activeTab)
     changeActiveTab(this)
   }
-  $("#tab-list").append(newTabElem)
+  document.getElementById("tab-list").insertAdjacentElement("beforeend", newTabElem)
 }
 
 function loadTabFromStore(content, active) {
@@ -187,9 +195,14 @@ function deleteActiveTabAndActivateLastTab() {
 function loadTextarea(content) {
   editor.renew(content)
 
-  $(".cm-link").on("click", function (e) {
-    window.open(e.target.innerHTML)
-  })
+  const links = document.getElementsByClassName("cm-link")
+
+  if (links.length === 0) return
+
+  for (link of links) {
+    link.removeEventListener("click", openLink, true)
+    link.addEventListener("click", openLink, true)
+  }
 }
 
 function countTabs() {
@@ -198,4 +211,8 @@ function countTabs() {
 
 function idGenerator() {
   return (((1 + Math.random()) * 0x10000) | 0).toString(32).substring(1)
+}
+
+function openLink(e) {
+  window.open(e.target.innerHTML)
 }
