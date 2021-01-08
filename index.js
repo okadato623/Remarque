@@ -127,20 +127,6 @@ function loadTabFromStore(content, active = false) {
   }
 }
 
-function activateLastTab() {
-  const tabs = document.getElementById("tab-list").childNodes
-  const lastTab = tabs[tabs.length - 1]
-  lastTab.className += " ActiveTab"
-  const savedTab = contents.find((content) => content.id === lastTab.id)
-  const content = savedTab === undefined ? "" : savedTab.content
-  loadTextarea(content)
-  chrome.storage.local.set({
-    storedContents: contents,
-    activeTabId: lastTab.id,
-    changeWindowId: window.id,
-  })
-}
-
 function deactivateAllTabs() {
   const tabs = document.getElementById("tab-list").childNodes
   tabs.forEach(function (tab) {
@@ -188,12 +174,8 @@ function deleteActiveTab() {
   if (active === undefined) return
   contents = contents.filter((content) => content.id !== active.id)
   active.remove()
-  chrome.storage.local.set({
-    storedContents: contents,
-    activeTabId: active.id,
-    changeWindowId: window.id,
-  })
-  activateLastTab()
+  const tabs = document.getElementById("tab-list").childNodes
+  focusTab(tabs[tabs.length - 1])
 }
 
 function loadTextarea(content) {
