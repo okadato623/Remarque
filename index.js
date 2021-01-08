@@ -2,12 +2,12 @@ let contents
 window.id = idGenerator()
 
 chrome.storage.local.get(
-  { storedContents: [], activeTabId: "", changeWindowId: "" },
+  { storedContents: [], changeWindowId: "" },
   function (items) {
     contents = items.storedContents
     if (contents.length !== 0) {
       contents.forEach(function (content) {
-        loadTabFromStore(content, content.id === items.activeTabId)
+        loadTabFromStore(content)
       })
     } else {
       initialize()
@@ -67,7 +67,7 @@ chrome.storage.onChanged.addListener(syncLatestWindow)
 
 function syncLatestWindow() {
   chrome.storage.local.get(
-    { storedContents: [], activeTabId: "", changeWindowId: "" },
+    { storedContents: [], changeWindowId: "" },
     function (items) {
       // 変更を及ぼした window の場合は sync は不要
       if (items.changeWindowId === window.id) return
@@ -77,7 +77,7 @@ function syncLatestWindow() {
       contents = items.storedContents
       if (contents.length !== 0) {
         contents.forEach(function (content) {
-          loadTabFromStore(content, content.id === items.activeTabId)
+          loadTabFromStore(content)
         })
       } else {
         initialize()
@@ -136,10 +136,10 @@ function createTabFromStore(content) {
   return tab
 }
 
-function loadTabFromStore(content, active = false) {
-  createTabFromStore(content)
-  if (active) {
-    loadTextarea(content.content)
+function loadTabFromStore(content) {
+  const tab = createTabFromStore(content)
+  if (content.active) {
+    focusTab(tab)
   }
 }
 
@@ -149,6 +149,9 @@ function deactivateAllTabs() {
     if (tab.classList !== undefined) {
       tab.classList.remove("ActiveTab")
     }
+  })
+  contents.forEach(function (content) {
+    content.active = false
   })
 }
 
@@ -167,13 +170,13 @@ function saveActiveTab() {
     id: active.id,
     title: active.innerHTML,
     content: editor.value(),
+    active: true,
   }
   const idx = contents.findIndex((content) => content.id === json.id)
   idx === -1 ? contents.push(json) : (contents[idx] = json)
 
   chrome.storage.local.set({
     storedContents: contents,
-    activeTabId: active.id,
     changeWindowId: window.id,
   })
 }
