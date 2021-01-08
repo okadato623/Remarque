@@ -10,7 +10,7 @@ chrome.storage.local.get(
         loadTabFromStore(content, content.id === items.activeTabId)
       })
     } else {
-      createNewTab()
+      initialize()
     }
   }
 )
@@ -80,10 +80,15 @@ function syncLatestWindow() {
           loadTabFromStore(content, content.id === items.activeTabId)
         })
       } else {
-        createNewTab()
+        initialize()
       }
     }
   )
+}
+
+function initialize() {
+  editor.renew()
+  createBlankTab()
 }
 
 function createNewTab() {
