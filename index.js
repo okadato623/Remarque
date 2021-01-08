@@ -32,7 +32,6 @@ const waitAndExecute = (stack, callback) => {
 const stack = []
 $(document).on("keydown", function (e) {
   if (e.metaKey && e.which === 83) {
-    saveActiveTab()
     e.preventDefault()
     return false
   }
