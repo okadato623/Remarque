@@ -88,7 +88,7 @@ function syncLatestWindow() {
 
 function initialize() {
   editor.renew()
-  createBlankTab()
+  focusTab(createBlankTab())
 }
 
 function createNewTab() {
@@ -97,14 +97,14 @@ function createNewTab() {
     return
   }
   saveActiveTab()
-  deactivateAllTabs()
   editor.renew()
-  createBlankTab()
+  focusTab(createBlankTab())
 }
 
 function createNewTabElem() {
   const newTabElem = document.createElement("div")
   newTabElem.contentEditable = true
+  newTabElem.className = "EditableTab"
   newTabElem.addEventListener("keydown", function (e) {
     if (e.keyCode === 13) {
       e.preventDefault()
@@ -119,21 +119,21 @@ function createNewTabElem() {
 }
 
 function createBlankTab() {
-  const elem = createNewTabElem()
-  elem.id = idGenerator()
-  elem.innerHTML = "New Tab"
-  elem.className = "EditableTab ActiveTab"
+  const tab = createNewTabElem()
+  tab.id = idGenerator()
+  tab.innerHTML = "New Tab"
   
-  $("#tab-list").append(elem)
+  $("#tab-list").append(tab)
+  return tab
 }
 
-function createTabFromStore(content, active) {
-  const elem = createNewTabElem()
-  elem.id = content.id
-  elem.innerHTML = content.title
-  elem.className = active ? "EditableTab ActiveTab" : "EditableTab"
+function createTabFromStore(content) {
+  const tab = createNewTabElem()
+  tab.id = content.id
+  tab.innerHTML = content.title
   
-  $("#tab-list").append(elem)
+  $("#tab-list").append(tab)
+  return tab
 }
 
 function loadTabFromStore(content, active = false) {
