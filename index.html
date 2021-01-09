@@ -6,13 +6,24 @@
 </head>
 
 <body style="background-color: #f0f0f0; font-size: 100%;">
-  <div style="margin: auto; max-width: 800px; display: flex;">
+  <div id="app" style="margin: auto; max-width: 800px; display: flex;">
     <div id="button-list" style="background-color: #f0f0f0; padding-top: 30px;">
       <button id="createNewTabBtn" class="OperationBtn">Create</button>
       <button id="deleteActiveTabBtn" class="OperationBtn">
         Delete
       </button>
-      <div id="tab-list" style="display: inline-block; vertical-align: top;"></div>
+      <div id="tab-list" style="display: inline-block; vertical-align: top;">
+        <div
+          v-for="content in contents"
+          contenteditable="true"
+          @keydown="preventDefaultWhenEnterKeydown"
+          class="EditableTab "
+          :class="(content.id === activeTabId) ? 'ActiveTab' : ''"
+          @click="activateTab(content.id)"
+        >
+          {{ content.title }}
+        </div>
+      </div>
     </div>
   </div>
   <div id="editor-container" style="margin: auto; height: 90%; max-width: 800px;"></div>

@@ -1,19 +1,36 @@
-let contents
 window.id = idGenerator()
 
-chrome.storage.local.get(
-  { storedContents: [], activeTabId: "", changeWindowId: "" },
-  function (items) {
-    contents = items.storedContents
-    if (contents.length !== 0) {
-      contents.forEach(function (content) {
-        loadTabFromStore(content, content.id === items.activeTabId)
-      })
-    } else {
-      createNewTab()
+const app = new Vue({
+  el: '#app',
+  data: {
+    contents: [],
+    activeTabId: ''
+  },
+  created() {
+    chrome.storage.local.get(
+      { storedContents: [], activeTabId: "", changeWindowId: "" },
+      items => {
+        console.log(items)
+        this.contents = items.storedContents
+        this.activeTabId = items.activeTabId
+
+        // TODO 0件のとき
+      }
+    )
+  },
+  methods: {
+    preventDefaultWhenEnterKeydown(e) {
+      if (e.keyCode === 13) {
+        e.preventDefault()
+        return false
+      }
+    },
+    activateTab(contentId) {
+      this.activeTabId = contentId
     }
   }
-)
+})
+
 
 window.addEventListener("unload", function () {
   saveActiveTab()
@@ -102,26 +119,6 @@ function createNewTab() {
   })
 }
 
-function createNewTabElem(content, active) {
-  const newTabElem = document.createElement("div")
-  newTabElem.contentEditable = true
-  newTabElem.addEventListener("keydown", function (e) {
-    if (e.keyCode === 13) {
-      e.preventDefault()
-      return false
-    }
-  })
-  newTabElem.id = content.id
-  newTabElem.innerHTML = content.title
-  newTabElem.className = active ? "EditableTab ActiveTab" : "EditableTab"
-  newTabElem.onclick = function () {
-    const activeTab = document.getElementsByClassName("ActiveTab")[0]
-    saveTabContent(activeTab)
-    changeActiveTab(this)
-  }
-  document.getElementById("tab-list").insertAdjacentElement("beforeend", newTabElem)
-}
-
 function loadTabFromStore(content, active) {
   createNewTabElem(content, active)
   if (active) {
@@ -167,14 +164,14 @@ function saveActiveTab() {
 
 function deleteActiveTabAndActivateLastTab() {
   if (window.confirm("Sure?") === false) return
-  
+
   // view
   const activeTabElem = document.getElementsByClassName("ActiveTab")[0]
   activeTabElem.remove()
 
   // contetnts
   contents = contents.filter((content) => content.id !== activeTabElem.id)
-  
+
   // view
   const tabs = document.getElementById("tab-list").childNodes
   const lastTab = tabs[tabs.length - 1]

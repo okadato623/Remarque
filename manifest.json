@@ -13,5 +13,6 @@
   },
   "permissions": [
     "storage"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js; object-src 'self'"
 }
